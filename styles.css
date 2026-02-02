@@ -1,0 +1,177 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: #1a1a2e;
+    font-family: 'Courier New', monospace;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    color: #eee;
+}
+
+#gameContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+canvas {
+    border: 4px solid #16213e;
+    background: #0f3460;
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+}
+
+#ui {
+    display: flex;
+    gap: 30px;
+    background: #16213e;
+    padding: 15px 30px;
+    border-radius: 10px;
+    font-size: 14px;
+}
+
+.stat {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.bar {
+    width: 150px;
+    height: 20px;
+    background: #0f3460;
+    border: 2px solid #e94560;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #e94560, #ff6b9d);
+    transition: width 0.3s;
+}
+
+#minimap {
+    background: #16213e;
+    padding: 15px;
+    border-radius: 10px;
+}
+
+#minimapCanvas {
+    border: 2px solid #0f3460;
+}
+
+#inventory {
+    background: #16213e;
+    padding: 15px;
+    border-radius: 10px;
+    min-width: 300px;
+}
+
+.weapon-item {
+    padding: 8px;
+    margin: 5px 0;
+    background: #0f3460;
+    border-radius: 5px;
+    border-left: 4px solid #e94560;
+}
+
+.active-weapon {
+    border-left-color: #4ecca3;
+    background: #1a4d3e;
+}
+
+#controls {
+    text-align: center;
+    background: #16213e;
+    padding: 15px;
+    border-radius: 10px;
+    font-size: 12px;
+}
+
+#shopMenu {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #16213e;
+    border: 4px solid #4ecca3;
+    padding: 30px;
+    border-radius: 15px;
+    display: none;
+    z-index: 1000;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+#shopMenu.active {
+    display: block;
+}
+
+.shop-item {
+    padding: 15px;
+    margin: 10px 0;
+    background: #0f3460;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s;
+    border: 2px solid transparent;
+}
+
+.shop-item:hover {
+    background: #1a4d3e;
+    border-color: #4ecca3;
+}
+
+.shop-item.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.shop-item.disabled:hover {
+    background: #0f3460;
+    border-color: transparent;
+}
+
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: none;
+    z-index: 999;
+}
+
+#overlay.active {
+    display: block;
+}
+
+#gearPanel {
+    background: #16213e;
+    padding: 15px;
+    border-radius: 10px;
+    min-width: 300px;
+}
+
+.gear-slot {
+    padding: 8px;
+    margin: 5px 0;
+    background: #0f3460;
+    border-radius: 5px;
+    border-left: 4px solid #ffd700;
+    font-size: 12px;
+}
+
+.gear-slot.equipped {
+    background: #1a4d3e;
+    border-left-color: #4ecca3;
+}
