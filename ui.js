@@ -81,6 +81,8 @@ function updateMinimap() {
                     minimapCtx.fillStyle = '#4ecca3';
                 } else if (room.type === ROOM_TYPES.BOSS) {
                     minimapCtx.fillStyle = '#e94560';
+                } else if (room.type === ROOM_TYPES.MINIBOSS) {
+                    minimapCtx.fillStyle = '#ff00ff'; // Purple for mini-boss rooms
                 } else if (room.type === ROOM_TYPES.KEY) {
                     minimapCtx.fillStyle = '#ffd700';
                 } else if (room.type === ROOM_TYPES.SHOP) {
