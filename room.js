@@ -7,6 +7,7 @@ class Room {
         this.cleared = false;
         this.visited = false;
         this.bossRoomUnlocked = false;
+        this.miniBossType = null; // For mini-boss rooms
         this.doors = {
             north: false,
             south: false,
