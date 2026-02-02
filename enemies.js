@@ -17,6 +17,55 @@ function spawnBoss(room) {
     createMusicLoop('boss_spawn');
 }
 
+// Spawn mini-boss function
+function spawnMiniBoss(type) {
+    game.doors.forEach(door => door.blocked = true);
+    createMusicLoop('boss_spawn');
+    
+    if (type === MINIBOSS_TYPES.DASHER) {
+        const dasher = {
+            x: ROOM_WIDTH / 2,
+            y: 150,
+            size: 30,
+            health: 400 + game.player.level * 30,
+            maxHealth: 400 + game.player.level * 30,
+            speed: 2,
+            color: '#ff4500',
+            type: ENEMY_TYPES.DASHER,
+            // Dasher-specific properties
+            state: 'idle', // idle, windup, dashing
+            windupTime: 0,
+            dashDirection: { x: 0, y: 0 },
+            dashSpeed: 15,
+            windupDuration: 1000, // 1 second windup
+            dashCooldown: 0,
+            lastDash: 0
+        };
+        game.enemies.push(dasher);
+        createParticles(dasher.x, dasher.y, '#ff4500', 30);
+        playEnemySpawnSound();
+    } else if (type === MINIBOSS_TYPES.NECROMANCER) {
+        const necromancer = {
+            x: ROOM_WIDTH / 2,
+            y: 150,
+            size: 28,
+            health: 350 + game.player.level * 25,
+            maxHealth: 350 + game.player.level * 25,
+            speed: 1.2,
+            color: '#800080',
+            type: ENEMY_TYPES.NECROMANCER,
+            // Necromancer-specific properties
+            lastSummon: Date.now(),
+            summonCooldown: 10000, // 10 seconds
+            minions: [], // Track summoned minions
+            healPerKill: 30
+        };
+        game.enemies.push(necromancer);
+        createParticles(necromancer.x, necromancer.y, '#800080', 30);
+        playEnemySpawnSound();
+    }
+}
+
 function spawnEnemiesInRoom(room) {
     const numEnemies = Math.floor(Math.random() * 5) + 4;
     
@@ -78,16 +127,107 @@ function spawnEnemy(x, y, type) {
     game.enemies.push(enemy);
 }
 
+// Summoned enemy (for necromancer)
+function spawnSummonedEnemy(x, y, type, necromancer) {
+    const enemy = {
+        x: x,
+        y: y,
+        size: 16,
+        health: 20 + game.player.level * 3,
+        maxHealth: 20 + game.player.level * 3,
+        speed: type === ENEMY_TYPES.SHOOTER ? 0.8 : 1.0,
+        color: type === ENEMY_TYPES.SHOOTER ? '#ff99cc' : '#cc99ff',
+        type: ENEMY_TYPES.SUMMONED,
+        actualType: type, // Store actual behavior type
+        wanderAngle: Math.random() * Math.PI * 2,
+        wanderTimer: 0,
+        lastShot: 0,
+        master: necromancer // Reference to necromancer
+    };
+    game.enemies.push(enemy);
+    necromancer.minions.push(enemy);
+    createParticles(x, y, enemy.color, 15);
+    playEnemySpawnSound();
+}
+
 function handleEnemyDeath(enemy) {
     const index = game.enemies.indexOf(enemy);
     if (index > -1) {
         game.enemies.splice(index, 1);
         
-        // Play death sound
-        playEnemyDeathSound(enemy.type === ENEMY_TYPES.BOSS);
+        // If this was a summoned minion, heal the necromancer
+        if (enemy.type === ENEMY_TYPES.SUMMONED && enemy.master) {
+            enemy.master.health = Math.min(enemy.master.maxHealth, enemy.master.health + enemy.master.healPerKill);
+            createParticles(enemy.master.x, enemy.master.y, '#00ff00', 20);
+            
+            // Remove from minions list
+            const minionIndex = enemy.master.minions.indexOf(enemy);
+            if (minionIndex > -1) {
+                enemy.master.minions.splice(minionIndex, 1);
+            }
+        }
         
+        // Play death sound
+        playEnemyDeathSound(enemy.type === ENEMY_TYPES.BOSS || enemy.type === ENEMY_TYPES.DASHER || enemy.type === ENEMY_TYPES.NECROMANCER);
+        
+        // Mini-boss drops special loot
+        if (enemy.type === ENEMY_TYPES.DASHER || enemy.type === ENEMY_TYPES.NECROMANCER) {
+            game.player.score += 150;
+            createParticles(enemy.x, enemy.y, enemy.color, 40);
+            
+            // Drop weapon
+            const miniBossWeapon = getRandomWeapon(true);
+            game.items.push({
+                x: enemy.x - 80,
+                y: enemy.y,
+                type: 'weapon',
+                data: miniBossWeapon,
+                size: 15
+            });
+            
+            // Drop money
+            const moneyAmount = Math.floor(Math.random() * 150) + 150;
+            game.items.push({
+                x: enemy.x - 30,
+                y: enemy.y,
+                type: 'money',
+                amount: moneyAmount,
+                size: 10
+            });
+            
+            // Drop ammo
+            const ammoAmount = Math.floor(Math.random() * 75) + 75;
+            game.items.push({
+                x: enemy.x + 30,
+                y: enemy.y,
+                type: 'ammo',
+                amount: ammoAmount,
+                size: 12
+            });
+            
+            // Drop health powerup
+            game.items.push({
+                x: enemy.x + 80,
+                y: enemy.y,
+                type: 'powerup',
+                data: 'health',
+                size: 15
+            });
+            
+            // Drop random gear
+            const gearSlots = ['helmet', 'vest', 'gloves', 'bag', 'shoes', 'ammoType'];
+            const randomSlot = gearSlots[Math.floor(Math.random() * gearSlots.length)];
+            const newGear = getRandomGear(randomSlot);
+            game.items.push({
+                x: enemy.x,
+                y: enemy.y + 50,
+                type: 'gear',
+                data: newGear,
+                size: 18
+            });
+        }
         // Boss drops special loot
-        if (enemy.type === ENEMY_TYPES.BOSS) {
+        else if (enemy.type === ENEMY_TYPES.BOSS) {
             game.player.score += 100;
             createParticles(enemy.x, enemy.y, enemy.color, 30);
             
@@ -218,6 +358,106 @@ function updateEnemySpawnIndicators() {
             
             // Remove the indicator
             game.enemySpawnIndicators.splice(i, 1);
+        }
+    }
+}
+
+// Update Dasher AI
+function updateDasherAI(enemy) {
+    const now = Date.now();
+    const angleToPlayer = Math.atan2(game.player.y - enemy.y, game.player.x - enemy.x);
+    
+    // Calculate dash cooldown based on health (dash more frequently at low health)
+    const healthPercent = enemy.health / enemy.maxHealth;
+    const baseCooldown = 3000; // 3 seconds base
+    const minCooldown = 1000; // 1 second minimum
+    enemy.dashCooldown = baseCooldown - (baseCooldown - minCooldown) * (1 - healthPercent);
+    
+    if (enemy.state === 'idle') {
+        // Move towards player slowly
+        enemy.x += Math.cos(angleToPlayer) * enemy.speed;
+        enemy.y += Math.sin(angleToPlayer) * enemy.speed;
+        
+        // Start windup if cooldown expired
+        if (now - enemy.lastDash > enemy.dashCooldown) {
+            enemy.state = 'windup';
+            enemy.windupTime = now;
+            enemy.dashDirection = {
+                x: Math.cos(angleToPlayer),
+                y: Math.sin(angleToPlayer)
+            };
+        }
+    } else if (enemy.state === 'windup') {
+        // Windup phase - show red highlight (handled in rendering)
+        const windupProgress = (now - enemy.windupTime) / enemy.windupDuration;
+        
+        if (windupProgress >= 1) {
+            // Start dashing
+            enemy.state = 'dashing';
+            enemy.dashStartX = enemy.x;
+            enemy.dashStartY = enemy.y;
+        }
+    } else if (enemy.state === 'dashing') {
+        // Dash in the locked direction
+        const newX = enemy.x + enemy.dashDirection.x * enemy.dashSpeed;
+        const newY = enemy.y + enemy.dashDirection.y * enemy.dashSpeed;
+        
+        // Check for wall collision
+        if (checkWallCollision(newX, newY, enemy.size) || checkEnemyDoorCollision(newX, newY, enemy.size)) {
+            // Hit wall! Shoot projectiles
+            enemy.state = 'idle';
+            enemy.lastDash = now;
+            
+            // Shoot 5 random projectiles away from the wall
+            for (let i = 0; i < 5; i++) {
+                const randomAngle = Math.random() * Math.PI * 2;
+                const bulletSpeed = 6;
+                game.enemyBullets.push({
+                    x: enemy.x,
+                    y: enemy.y,
+                    vx: Math.cos(randomAngle) * bulletSpeed,
+                    vy: Math.sin(randomAngle) * bulletSpeed,
+                    color: '#ff4500',
+                    size: 6
+                });
+            }
+            playExplosionSound();
+            createParticles(enemy.x, enemy.y, '#ff4500', 25);
+        } else {
+            enemy.x = newX;
+            enemy.y = newY;
+        }
+    }
+}
+
+// Update Necromancer AI
+function updateNecromancerAI(enemy) {
+    const now = Date.now();
+    const distToPlayer = Math.hypot(game.player.x - enemy.x, game.player.y - enemy.y);
+    const angleToPlayer = Math.atan2(game.player.y - enemy.y, game.player.x - enemy.x);
+    
+    // Keep distance from player
+    if (distToPlayer < 200) {
+        enemy.x -= Math.cos(angleToPlayer) * enemy.speed;
+        enemy.y -= Math.sin(angleToPlayer) * enemy.speed;
+    } else if (distToPlayer > 350) {
+        enemy.x += Math.cos(angleToPlayer) * enemy.speed * 0.5;
+        enemy.y += Math.sin(angleToPlayer) * enemy.speed * 0.5;
+    }
+    
+    // Summon minions every 10 seconds
+    if (now - enemy.lastSummon > enemy.summonCooldown && enemy.minions.length < 4) {
+        enemy.lastSummon = now;
+        
+        // Summon 2 enemies
+        for (let i = 0; i < 2; i++) {
+            const spawnAngle = Math.random() * Math.PI * 2;
+            const spawnDist = 50;
+            const spawnX = enemy.x + Math.cos(spawnAngle) * spawnDist;
+            const spawnY = enemy.y + Math.sin(spawnAngle) * spawnDist;
+            
+            const summonType = Math.random() > 0.5 ? ENEMY_TYPES.SHOOTER : ENEMY_TYPES.CHASER;
+            spawnSummonedEnemy(spawnX, spawnY, summonType, enemy);
         }
     }
 }
