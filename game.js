@@ -415,6 +415,18 @@ function gameLoop() {
     requestAnimationFrame(gameLoop);
 }
 
+// Get mouse coordinates accounting for canvas scaling
+function getScaledMouseCoordinates(e, canvas) {
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = ROOM_WIDTH / rect.width;
+    const scaleY = ROOM_HEIGHT / rect.height;
+    
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
+    
+    return { x, y };
+}
+
 // Initialize and start the game when DOM is ready
 function initGame() {
     // Initialize canvas references
@@ -435,11 +447,11 @@ function initGame() {
         setSFXVolume(e.target.value / 100);
     });
     
-    // Setup canvas event listeners
+    // Setup canvas event listeners with proper scaling
     canvas.addEventListener('mousemove', (e) => {
-        const rect = canvas.getBoundingClientRect();
-        game.mouseX = e.clientX - rect.left;
-        game.mouseY = e.clientY - rect.top;
+        const coords = getScaledMouseCoordinates(e, canvas);
+        game.mouseX = coords.x;
+        game.mouseY = coords.y;
     });
 
     canvas.addEventListener('mousedown', () => {
