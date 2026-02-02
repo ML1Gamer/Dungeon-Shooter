@@ -58,6 +58,12 @@ function manualPickup() {
                 createParticles(item.x, item.y, '#ffd700', 20);
                 playPickupSound('key');
                 game.items.splice(i, 1);
+            } else if (item.type === 'miniboss_pedestal') {
+                // Summon mini-boss!
+                spawnMiniBoss(item.miniBossType);
+                game.items.splice(i, 1);
+                createParticles(item.x, item.y, '#ff00ff', 30);
+                playExplosionSound();
             } else if (item.type === 'next_floor') {
                 nextFloor();
                 return;
