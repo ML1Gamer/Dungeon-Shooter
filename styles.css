@@ -12,6 +12,8 @@ body {
     align-items: center;
     min-height: 100vh;
     color: #eee;
+    overflow: auto;
+    padding: 10px;
 }
 
 #gameContainer {
@@ -19,27 +21,42 @@ body {
     flex-direction: column;
     align-items: center;
     gap: 20px;
+    max-width: 100%;
+    width: fit-content;
 }
 
 canvas {
     border: 4px solid #16213e;
     background: #0f3460;
     box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+#gameCanvas {
+    width: 800px;
+    height: 600px;
+    max-width: 100%;
 }
 
 #ui {
     display: flex;
-    gap: 30px;
+    gap: 20px;
     background: #16213e;
-    padding: 15px 30px;
+    padding: 15px 20px;
     border-radius: 10px;
     font-size: 14px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 100%;
 }
 
 .stat {
     display: flex;
     align-items: center;
     gap: 10px;
+    min-width: fit-content;
 }
 
 .bar {
@@ -65,6 +82,8 @@ canvas {
 
 #minimapCanvas {
     border: 2px solid #0f3460;
+    max-width: 100%;
+    height: auto;
 }
 
 #inventory {
@@ -72,6 +91,7 @@ canvas {
     padding: 15px;
     border-radius: 10px;
     min-width: 300px;
+    max-width: 100%;
 }
 
 .weapon-item {
@@ -80,6 +100,8 @@ canvas {
     background: #0f3460;
     border-radius: 5px;
     border-left: 4px solid #e94560;
+    font-size: 12px;
+    word-wrap: break-word;
 }
 
 .active-weapon {
@@ -92,7 +114,8 @@ canvas {
     background: #16213e;
     padding: 15px;
     border-radius: 10px;
-    font-size: 12px;
+    font-size: 11px;
+    max-width: 100%;
 }
 
 #shopMenu {
@@ -106,7 +129,7 @@ canvas {
     border-radius: 15px;
     display: none;
     z-index: 1000;
-    max-width: 500px;
+    max-width: 90vw;
     max-height: 80vh;
     overflow-y: auto;
 }
@@ -159,7 +182,8 @@ canvas {
     background: #16213e;
     padding: 15px;
     border-radius: 10px;
-    min-width: 300px;
+    min-width: 200px;
+    max-width: 100%;
 }
 
 .gear-slot {
@@ -168,10 +192,87 @@ canvas {
     background: #0f3460;
     border-radius: 5px;
     border-left: 4px solid #ffd700;
-    font-size: 12px;
+    font-size: 11px;
 }
 
 .gear-slot.equipped {
     background: #1a4d3e;
     border-left-color: #4ecca3;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 1200px) {
+    #ui {
+        font-size: 12px;
+        gap: 15px;
+    }
+    
+    .bar {
+        width: 120px;
+    }
+    
+    #controls {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 900px) {
+    body {
+        padding: 5px;
+    }
+    
+    #gameContainer {
+        gap: 10px;
+    }
+    
+    #ui {
+        font-size: 11px;
+        gap: 10px;
+        padding: 10px 15px;
+    }
+    
+    .bar {
+        width: 100px;
+    }
+    
+    #inventory {
+        min-width: 250px;
+    }
+    
+    .weapon-item {
+        font-size: 11px;
+        padding: 6px;
+    }
+    
+    #gearPanel {
+        min-width: 180px;
+    }
+    
+    .gear-slot {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 600px) {
+    #ui {
+        font-size: 10px;
+        gap: 8px;
+    }
+    
+    .stat {
+        font-size: 10px;
+    }
+    
+    .bar {
+        width: 80px;
+        height: 16px;
+    }
+    
+    #inventory {
+        min-width: 200px;
+    }
+    
+    #controls {
+        font-size: 9px;
+    }
 }
