@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Dungeon Crawler RPG</title>
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -40,14 +40,14 @@
                 <span id="keyStatus">🔑 No Key</span>
             </div>
         </div>
-        <div style="display: flex; gap: 20px;">
+        <div style="display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; max-width: 100%;">
             <canvas id="gameCanvas" width="800" height="600"></canvas>
-            <div>
+            <div style="display: flex; flex-direction: column; gap: 20px;">
                 <div id="minimap">
                     <div style="text-align: center; margin-bottom: 10px; font-weight: bold;">Map</div>
                     <canvas id="minimapCanvas" width="200" height="200"></canvas>
                 </div>
-                <div id="gearPanel" style="margin-top: 20px;">
+                <div id="gearPanel">
                     <div style="font-weight: bold; margin-bottom: 10px; text-align: center;">⚔️ GEAR ⚔️</div>
                     <div id="gearList"></div>
                 </div>
