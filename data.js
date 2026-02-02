@@ -38,13 +38,14 @@ const gearTypes = {
 const weaponTypes = {
     melee: { name: 'Knife', damage: 15, fireRate: 400, bulletSpeed: 0, color: '#888', spread: 0, ammo: Infinity, range: 80, isMelee: true },
     pistol: { name: 'Pistol', damage: 20, fireRate: 300, bulletSpeed: 8, color: '#888', spread: 0.1, ammo: 60 },
-    shotgun: { name: 'Shotgun', damage: 15, fireRate: 700, bulletSpeed: 7, color: '#d4a574', spread: 0.5, bullets: 5, ammo: 30 },
-    combatShotgun: { name: 'CombatShotgun', damage: 20, fireRate: 1000, bulletSpeed: 10, color: '#d4a574', spread: 0.4, bullets: 20, ammo: 400, canRefill: false },
+    shotgun: { name: 'Shotgun', damage: 15, fireRate: 700, bulletSpeed: 7, color: '#d4a574', spread: 0.5, bullets: 5, ammo: 250 },
+    doubleBarrelShotgun: { name: 'DoubleBarrel', damage: 10, fireRate: 1100, bulletSpeed: 7, color: '#d4a574', spread: 0.75, bullets: 8, burstCount: 2, ammo: 200 },
+    combatShotgun: { name: 'CombatShotgun', damage: 20, fireRate: 1000, bulletSpeed: 10, color: '#d4a574', spread: 0.4, bullets: 20, ammo: 200, canRefill: false },
     rifle: { name: 'Rifle', damage: 25, fireRate: 150, bulletSpeed: 12, color: '#4a4a4a', spread: 0.05, ammo: 120 },
     sniper: { name: 'Sniper', damage: 100, fireRate: 1200, bulletSpeed: 15, color: '#2e5c3e', spread: 0.05, ammo: 20 },
-    smg: { name: 'SMG', damage: 15, fireRate: 75, bulletSpeed: 9, color: '#5a4fcf', spread: 0.3, ammo: 300 },
+    smg: { name: 'SMG', damage: 15, fireRate: 75, bulletSpeed: 9, color: '#5a4fcf', spread: 0.2, ammo: 300 },
     famas: { name: 'FAMAS', damage: 22, fireRate: 600, bulletSpeed: 11, color: '#3a5f8f', spread: 0.08, ammo: 90, burstCount: 3, burstDelay: 80 },
-    dmr: { name: 'DMR', damage: 60, fireRate: 500, bulletSpeed: 14, color: '#5d4e37', spread: 0.02, ammo: 40 },
+    dmr: { name: 'DMR', damage: 60, fireRate: 500, bulletSpeed: 14, color: '#5d4e37', spread: 0.07, ammo: 40 },
     bmg50: { name: '.50 Cal BMG', damage: 200, fireRate: 1800, bulletSpeed: 25, color: '#8b0000', spread: 0, ammo: 25, penetrating: true, canRefill: false },
     grenadeLauncher: { name: 'Grenade Launcher', damage: 50, fireRate: 1000, bulletSpeed: 6, color: '#2d5016', spread: 0.3, ammo: 15, explosive: true, explosionRadius: 120 }
 };
