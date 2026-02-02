@@ -106,6 +106,16 @@ function generateDungeon() {
         }
     }
 
+    // ALWAYS add a mini-boss room on every floor
+    if (normalRooms.length > 0) {
+        const miniBossRoom = normalRooms[Math.floor(Math.random() * normalRooms.length)];
+        miniBossRoom.type = ROOM_TYPES.MINIBOSS;
+        // Pick a random mini-boss type
+        const miniBossTypes = Object.values(MINIBOSS_TYPES);
+        miniBossRoom.miniBossType = miniBossTypes[Math.floor(Math.random() * miniBossTypes.length)];
+        normalRooms.splice(normalRooms.indexOf(miniBossRoom), 1);
+    }
+
     // 25% chance for gun room
     if (normalRooms.length > 0 && Math.random() < 0.25) {
         const gunRoom = normalRooms[Math.floor(Math.random() * normalRooms.length)];
@@ -150,7 +160,7 @@ function enterRoom(room) {
         createMusicLoop(ROOM_TYPES.SHOP);
     } else if (room.type === ROOM_TYPES.START) {
         createMusicLoop(ROOM_TYPES.START);
-    } else if (room.type === ROOM_TYPES.BOSS) {
+    } else if (room.type === ROOM_TYPES.BOSS || room.type === ROOM_TYPES.MINIBOSS) {
         if (room.visited && !room.cleared) {
             createMusicLoop(ROOM_TYPES.BOSS);
         } else {
@@ -167,7 +177,7 @@ function enterRoom(room) {
     game.walls.push({ x: ROOM_WIDTH - 20, y: 0, w: 20, h: ROOM_HEIGHT });
 
     // Create doors
-    const shouldBlockDoors = room.visited && !room.cleared && room.type === ROOM_TYPES.NORMAL;
+    const shouldBlockDoors = room.visited && !room.cleared && (room.type === ROOM_TYPES.NORMAL || room.type === ROOM_TYPES.MINIBOSS);
     
     if (room.doors.north) {
         game.doors.push({ 
@@ -231,6 +241,16 @@ function enterRoom(room) {
         
         if (room.type === ROOM_TYPES.NORMAL) {
             spawnEnemiesInRoom(room);
+        } else if (room.type === ROOM_TYPES.MINIBOSS) {
+            // Add pedestal to summon mini-boss
+            game.items.push({
+                x: ROOM_WIDTH / 2,
+                y: ROOM_HEIGHT / 2,
+                type: 'miniboss_pedestal',
+                miniBossType: room.miniBossType,
+                size: 30
+            });
+            room.cleared = false; // Room not cleared until mini-boss defeated
         } else if (room.type === ROOM_TYPES.BOSS) {
             if (isBossFloor) {
                 // Boss floor - spawn boss immediately
@@ -297,7 +317,21 @@ function enterRoom(room) {
         // Re-entering room
         const isBossFloor = game.player.level % 5 === 0;
         
-        if (room.type === ROOM_TYPES.BOSS) {
+        if (room.type === ROOM_TYPES.MINIBOSS) {
+            if (room.cleared) {
+                // Mini-boss already defeated, show loot
+                // Loot is handled when mini-boss dies
+            } else {
+                // Show pedestal again
+                game.items.push({
+                    x: ROOM_WIDTH / 2,
+                    y: ROOM_HEIGHT / 2,
+                    type: 'miniboss_pedestal',
+                    miniBossType: room.miniBossType,
+                    size: 30
+                });
+            }
+        } else if (room.type === ROOM_TYPES.BOSS) {
             if (isBossFloor) {
                 // Boss floor - check if boss was defeated
                 if (room.cleared) {
